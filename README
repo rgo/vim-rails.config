@@ -1,0 +1,33 @@
+Installation (copied from http://github.com/goomerko/vim-rails.config/tree/master)
+============
+ 
+1. Backup your .vimrc file and .vim directory
+ 
+2. In your home, do:
+ 
+  git clone git://github.com/goomerko/vim-rails.config.git .vim
+  
+  ln -s .vim/vimrc .vimrc
+ 
+        And if you like gvim:
+ 
+  ln -s .vim/gvimrc .gvimrc
+ 
+3. Enjoy!
+
+
+Plugins
+=======
+1. Rails.vim
+2. GetLatestVimScripts (maintain my plugins updated)
+3. NERD_tree.vim
+4. allml (helps to write tags)
+5. endwise.vim (Wisely add "end" in ruby, endfunction/endif/more in vim script, etc)
+6. fuzzy_finder_textmate.vim
+7. gist.vim
+8. matchit.vim
+9. surroud.vim
+10. taglist.vim (patched to works very well with RoR projects).
+11. vcscommand.vim (SCM client)
+
+There're others plugins but are dependencies.
