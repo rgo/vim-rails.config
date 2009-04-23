@@ -1,5 +1,8 @@
-Installation (copied from http://github.com/goomerko/vim-rails.config/tree/master)
+Installation (based on http://github.com/goomerko/vim-rails.config/tree/master)
 ============
+Dependencies: 
+	vim with ruby support 
+	ACK (or comment line 147 in vimrc file - not tested).
  
 1. Backup your .vimrc file and .vim directory
  
@@ -9,11 +12,9 @@ Installation (copied from http://github.com/goomerko/vim-rails.config/tree/maste
   
   ln -s .vim/vimrc .vimrc
  
-        And if you like gvim:
- 
-  ln -s .vim/gvimrc .gvimrc
- 
-3. Enjoy!
+3. Set projects base directory at line 170 in vimrc file.
+
+4. Enjoy!
 
 
 Plugins
@@ -77,3 +78,27 @@ vcscommand:
   VCSLog									Show log
 	VCSVimdiff							Compare current buffer with latest commit
   VCSVimdiff <release>		Compare current buffer with a concrete commit
+
+
+Maps and functions
+==================
+Tabs:
+  ctrl-n			move to next tab
+  ctrl-p			move to previous tab
+	ctrl-t			open new tab
+	t%					open actual buffer in a tab
+	td					close tab
+
+Comment:
+	,c					comment a region
+	,u					uncomment a region
+
+Toggle:
+	F2					paste mode
+	F3					hlsearch
+	F4					wrap text
+	F5					ignore case
+
+Grep(with ACK)
+	:Rgre	<string>					Search the string along the project and show results in quickfix window
+	:Rgrepdef	<string>			Search a method with the string along the project and show results in quickfix window
