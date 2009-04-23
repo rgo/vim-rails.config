@@ -30,4 +30,50 @@ Plugins
 10. taglist.vim (patched to works very well with RoR projects).
 11. vcscommand.vim (SCM client)
 
-There're other plugins not listed here because there're dependencies.
+There're other plugins not listed here because are dependencies.
+
+
+Usage(or tips)
+==============
+FIRST: Enter in RAILS_ROOT and load vim.
+
+Taglist usage(very very useful): 
+	Current directory should be rails_root
+	Push F8 (show taglist window) and then push F7 (procesing tags).
+	Then you have a window with all relevant RoR files to access them or their methods.
+
+GetLatestVimScripts:
+  With :GLVS command should update all your plugins (some are installed others only downloaded).
+	You should find configuration file at .vim/GetLatest/GetLatestVimScripts.dat (plain text file)
+
+NERD_tree:
+	It's configured to show/hide with F9 key.
+
+allml:
+	Useful when you're editing *ml files.
+	In ERB files I use the shortcuts:
+		   " Mapping       Changed to   (cursor = ^)
+			 " <C-X>=        foo<%= ^ %>
+			 " <C-X>-        foo<% ^ %>
+			 " <C-X>'        foo<%# ^ %>         (mnemonic: ' is a comment in ASP with VBS)
+			 " <C-X><Space>  <foo>^</foo>
+			 " <C-X><CR>     <foo>\n^\n</foo>
+	Read allml.vim to find other shortcuts.
+
+fuzzyfinder_textmate:
+	\t	FuzzyFinder textmate mode
+	\b	FuzzyFinder buffer mode
+	\f	FuzzyFinder files mode
+  leader = \
+
+matchit:
+	Matching "%"
+
+surround:
+	help surround ;-)
+
+vcscommand:
+	VCSCommit								Do commit!
+  VCSLog									Show log
+	VCSVimdiff							Compare current buffer with latest commit
+  VCSVimdiff <release>		Compare current buffer with a concrete commit
