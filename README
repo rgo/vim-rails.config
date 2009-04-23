@@ -5,7 +5,7 @@ Installation (copied from http://github.com/goomerko/vim-rails.config/tree/maste
  
 2. In your home, do:
  
-  git clone git://github.com/goomerko/vim-rails.config.git .vim
+	git clone git://github.com/rgo/vim-rails.config.git .vim
   
   ln -s .vim/vimrc .vimrc
  
@@ -30,4 +30,4 @@ Plugins
 10. taglist.vim (patched to works very well with RoR projects).
 11. vcscommand.vim (SCM client)
 
-There're others plugins but are dependencies.
+There're other plugins not listed here because there're dependencies.
