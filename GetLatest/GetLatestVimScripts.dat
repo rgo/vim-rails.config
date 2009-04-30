@@ -3,7 +3,6 @@ ScriptID SourceID Filename
 171 3582 :AutoInstall: multvals.vim
 273 7701 :AutoInstall: taglist.zip
 1891 7341 vividchalk.vim
-415 9518 zenburn.vim
 90 9965 :AutoInstall: vcscommand.zip
 39 8196 :AutoInstall: matchit.zip
 1896 7356 :AutoInstall: allml.vim

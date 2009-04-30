@@ -8,6 +8,8 @@ set number
 set tabstop=2
 set shiftwidth=2
 set softtabstop=2
+" Set terminal to 256 colors
+set t_Co=256
 " Textmate scheme colors clone
 colorscheme vividchalk
 "set visualbell
@@ -95,7 +97,7 @@ noremap <silent> ,u :<C-B>sil <C-E>s/^\V<C-R>=escape(b:comment_leader,'\/')<CR>/
 " set wildmode=longest,list:full
 "
 " Tip 1386 [http://vim.wikia.com/wiki/Make_Vim_completion_popup_menu_work_just_like_in_an_IDE]
-set completeopt=longest,menuone
+"set completeopt=longest,menuone
 
 
 "Autoinstall GetLatestVimScripts
