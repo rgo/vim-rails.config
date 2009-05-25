@@ -88,9 +88,9 @@ au FileType ruby,sh,make let b:comment_leader = '# '
 au FileType tex let b:comment_leader = '% '
 
 ",c comments out a region
-noremap <silent> ,c :<C-B>sil <C-E>s/^/<C-R>=escape(b:comment_leader,'\/')<CR>/<CR>:noh<CR> 
+"noremap <silent> ,c :<C-B>sil <C-E>s/^/<C-R>=escape(b:comment_leader,'\/')<CR>/<CR>:noh<CR> 
 ",u uncomments a region
-noremap <silent> ,u :<C-B>sil <C-E>s/^\V<C-R>=escape(b:comment_leader,'\/')<CR>//e<CR>:noh<CR>
+"noremap <silent> ,u :<C-B>sil <C-E>s/^\V<C-R>=escape(b:comment_leader,'\/')<CR>//e<CR>:noh<CR>
 
 
 " Complete filenames like a terminal(show list) - :help wildmode
@@ -167,13 +167,14 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Add the contents of this file to your ~/.vimrc file
 "
+"
 " Crucial setting, set to the dir in which your ruby projects reside
 
 let base_dir = "/home/leptom/Workspace/" . expand("%")
 
 " Central additions (also add the functions below)
 
-:command RTlist call CtagAdder("app/models","app/controllers","app/views","public", "config")
+:command RTlist call CtagAdder("app/models","app/controllers","app/views","public", "config", "lib")
 
 map <F7> :RTlist<CR>
 

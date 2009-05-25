@@ -19,17 +19,18 @@ Dependencies:
 
 Plugins
 =======
-1. Rails.vim
+1. Rails
 2. GetLatestVimScripts (maintain my plugins updated)
-3. NERD_tree.vim
+3. NERD_tree
+4. NERD_commenter
 4. allml (helps to write tags)
 5. endwise.vim (Wisely add "end" in ruby, endfunction/endif/more in vim script, etc)
-6. fuzzy_finder_textmate.vim
-7. gist.vim
-8. matchit.vim
-9. surroud.vim
-10. taglist.vim (patched to works very well with RoR projects).
-11. vcscommand.vim (SCM client)
+6. fuzzy_finder_textmate
+7. gist
+8. matchit
+9. surroud
+10. taglist (patched to works very well with RoR projects).
+11. vcscommand (SCM client)
 
 There're other plugins not listed here because are dependencies.
 
@@ -49,6 +50,16 @@ GetLatestVimScripts:
 
 NERD_tree:
 	It's configured to show/hide with F9 key.
+
+NERD_commenter:
+  ,c<space>  Toggle comment
+	,cc		     Comment line
+	,cy		     Comment line and yank it
+	,c$        Comment from cursor to end of line
+  ,cA        Add comment delimiter to the end of line
+  ,ca        Switch delimiters
+  More shortcuts :help NERD_commenter
+	
 
 allml:
 	Useful when you're editing *ml files.
@@ -88,10 +99,6 @@ Tabs:
 	ctrl-t			open new tab
 	t%					open actual buffer in a tab
 	td					close tab
-
-Comment:
-	,c					comment a region
-	,u					uncomment a region
 
 Toggle:
 	F2					paste mode
