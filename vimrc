@@ -87,11 +87,6 @@ au FileType c,cpp,java let b:comment_leader = '// '
 au FileType ruby,sh,make let b:comment_leader = '# '
 au FileType tex let b:comment_leader = '% '
 
-",c comments out a region
-"noremap <silent> ,c :<C-B>sil <C-E>s/^/<C-R>=escape(b:comment_leader,'\/')<CR>/<CR>:noh<CR> 
-",u uncomments a region
-"noremap <silent> ,u :<C-B>sil <C-E>s/^\V<C-R>=escape(b:comment_leader,'\/')<CR>//e<CR>:noh<CR>
-
 
 " Complete filenames like a terminal(show list) - :help wildmode
 " set wildmode=longest,list:full
