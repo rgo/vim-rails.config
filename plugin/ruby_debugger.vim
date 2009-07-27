@@ -7,14 +7,17 @@ map <Leader>s  :call g:RubyDebugger.step()<CR>
 map <Leader>n  :call g:RubyDebugger.next()<CR>
 map <Leader>c  :call g:RubyDebugger.continue()<CR>
 map <Leader>e  :call g:RubyDebugger.exit()<CR>
+map <Leader>d  :call g:RubyDebugger.remove_breakpoints()<CR>
 
-command! -nargs=? Rdebugger :call g:RubyDebugger.start(<q-args>) 
+command! -nargs=? -complete=file Rdebugger :call g:RubyDebugger.start(<q-args>) 
+command! -nargs=0 RdbStop :call g:RubyDebugger.stop() 
 command! -nargs=1 RdbCommand :call g:RubyDebugger.send_command(<q-args>) 
+command! -nargs=0 RdbTest :call g:RubyDebugger.run_test() 
 
-if exists("g:loaded_ruby_debugger")
+if exists("g:ruby_debugger_loaded")
   finish
 endif
-if v:version < 700
+if v:version < 700 
   echoerr "RubyDebugger: This plugin requires Vim >= 7."
   finish
 endif
@@ -22,16 +25,27 @@ if !has("clientserver")
   echoerr "RubyDebugger: This plugin requires +clientserver option"
   finish
 endif
-let g:loaded_ruby_debugger = 1
+if !executable("rdebug-ide")
+  echoerr "RubyDebugger: You don't have installed 'ruby-debug-ide' gem or executable 'rdebug-ide' can't be found in your PATH"
+  finish
+endif
+if !(has("win32") || has("win64")) && !executable("lsof")
+  echoerr "RubyDebugger: You don't have 'lsof' installed or executable 'lsof' can't be found in your PATH"
+  finish
+endif
+let g:ruby_debugger_loaded = 1
 
 
 let s:rdebug_port = 39767
 let s:debugger_port = 39768
+" hostname() returns something strange in Windows (E98BD9A419BB41D), so set hostname explicitly
+let s:hostname = 'localhost' "hostname()
 " ~/.vim for Linux, vimfiles for Windows
 let s:runtime_dir = split(&runtimepath, ',')[0]
 " File for communicating between intermediate Ruby script ruby_debugger.rb and
 " this plugin
 let s:tmp_file = s:runtime_dir . '/tmp/ruby_debugger'
+let s:server_output_file = s:runtime_dir . '/tmp/ruby_debugger_output'
 " Default id for sign of current line
 let s:current_line_sign_id = 120
 
@@ -136,7 +150,30 @@ endfunction
 " Send message to debugger. This function should never be used explicitly,
 " only through g:RubyDebugger.send_command function
 function! s:send_message_to_debugger(message)
-  call system("ruby -e \"require 'socket'; a = TCPSocket.open('localhost', 39768); a.puts('" . a:message . "'); a.close\"")
+  if g:ruby_debugger_fast_sender
+    call system(s:runtime_dir . "/bin/socket " . s:hostname . " " . s:debugger_port . " '" . a:message . "'")
+  else
+    let script =  "ruby -e \"require 'socket'; "
+    let script .= "attempts = 0; "
+    let script .= "begin; "
+    let script .=   "a = TCPSocket.open('" . s:hostname . "', " . s:debugger_port . "); "
+    let script .=   "a.puts('" . a:message . "'); "
+    let script .=   "a.close; "
+    let script .= "rescue Errno::ECONNREFUSED; "
+    let script .=   "attempts += 1; "
+    let script .=   "if attempts < 400; "
+    let script .=     "sleep 0.05; "
+    let script .=     "retry; "
+    let script .=   "else; "
+    let script .=     "puts('" . s:hostname . ":" . s:debugger_port . " can not be opened'); "
+    let script .=     "exit; "
+    let script .=   "end; "
+    let script .= "end; \""
+    let output = system(script)
+    if output =~ 'can not be opened'
+      call g:RubyDebugger.logger.put("Can't send a message to rdebug - port is not opened") 
+    endif
+  endif
 endfunction
 
 
@@ -254,8 +291,9 @@ let RubyDebugger = { 'commands': {}, 'variables': {}, 'settings': {}, 'breakpoin
 " Run debugger server. It takes one optional argument with path to debugged
 " ruby script ('script/server webrick' by default)
 function! RubyDebugger.start(...) dict
-  let g:RubyDebugger.server = s:Server.new(s:rdebug_port, s:debugger_port, s:runtime_dir, s:tmp_file)
+  let g:RubyDebugger.server = s:Server.new(s:hostname, s:rdebug_port, s:debugger_port, s:runtime_dir, s:tmp_file, s:server_output_file)
   let script = a:0 && !empty(a:1) ? a:1 : 'script/server webrick'
+  echo "Loading debugger..."
   call g:RubyDebugger.server.start(script)
 
   " Send only first breakpoint to the debugger. All other breakpoints will be
@@ -268,6 +306,14 @@ function! RubyDebugger.start(...) dict
     call g:RubyDebugger.send_command('start')
   endif
   echo "Debugger started"
+endfunction
+
+
+" Stop running server.
+function! RubyDebugger.stop() dict
+  if has_key(g:RubyDebugger, 'server')
+    call g:RubyDebugger.server.stop()
+  endif
 endfunction
 
 
@@ -303,7 +349,7 @@ endfunction
 
 " We set function this way, because we want have possibility to mock it by
 " other function in tests
-let RubyDebugger.send_command = function("s:send_message_to_debugger")
+let RubyDebugger.send_command = function("<SID>send_message_to_debugger")
 
 
 " Open variables window
@@ -344,6 +390,15 @@ function! RubyDebugger.toggle_breakpoint() dict
 endfunction
 
 
+" Remove all breakpoints
+function! RubyDebugger.remove_breakpoints() dict
+  for breakpoint in g:RubyDebugger.breakpoints
+    call breakpoint.delete()
+  endfor
+  let g:RubyDebugger.breakpoints = []
+endfunction
+
+
 " Next
 function! RubyDebugger.next() dict
   call g:RubyDebugger.send_command("next")
@@ -372,6 +427,19 @@ endfunction
 function! RubyDebugger.exit() dict
   call g:RubyDebugger.send_command("exit")
   call s:clear_current_state()
+endfunction
+
+
+" Debug current opened test
+function! RubyDebugger.run_test() dict
+  let file = s:get_filename()
+  if file =~ '_spec\.rb$'
+    call g:RubyDebugger.start(g:ruby_debugger_spec_path . ' ' . file)
+  elseif file =~ '\.feature$'
+    call g:RubyDebugger.start(g:ruby_debugger_cucumber_path . ' ' . file)
+  elseif file =~ '_test\.rb$'
+    call g:RubyDebugger.start(file)
+  endif
 endfunction
 
 
@@ -633,6 +701,7 @@ function! s:Window.open() dict
       setlocal foldcolumn=0
       setlocal nobuflisted
       setlocal nospell
+      setlocal nolist
       iabc <buffer>
       setlocal cursorline
       setfiletype ruby_debugger_window
@@ -1314,42 +1383,43 @@ let s:Server = {}
 " ** Public methods
 
 " Constructor of new server. Just inits it, not runs
-function! s:Server.new(rdebug_port, debugger_port, runtime_dir, tmp_file) dict
+function! s:Server.new(hostname, rdebug_port, debugger_port, runtime_dir, tmp_file, output_file) dict
   let var = copy(self)
+  let var.hostname = a:hostname
   let var.rdebug_port = a:rdebug_port
   let var.debugger_port = a:debugger_port
   let var.runtime_dir = a:runtime_dir
   let var.tmp_file = a:tmp_file
+  let var.output_file = a:output_file
   return var
 endfunction
 
 
 " Start the server. It will kill any listeners on given ports before.
 function! s:Server.start(script) dict
-  call self._stop_server('localhost', s:rdebug_port)
-  call self._stop_server('localhost', s:debugger_port)
-  let rdebug = 'rdebug-ide -p ' . self.rdebug_port . ' -- ' . a:script
+  call self._stop_server(self.rdebug_port)
+  call self._stop_server(self.debugger_port)
+  " Remove leading and trailing quotes
+  let script_name = substitute(a:script, "\\(^['\"]\\|['\"]$\\)", '', 'g')
+  let rdebug = 'rdebug-ide -p ' . self.rdebug_port . ' -- ' . script_name
   let os = has("win32") || has("win64") ? 'win' : 'posix'
   " Example - ruby ~/.vim/bin/ruby_debugger.rb 39767 39768 vim VIM /home/anton/.vim/tmp/ruby_debugger posix
-  let debugger_parameters = ' ' . self.rdebug_port . ' ' . self.debugger_port . ' ' . v:progname . ' ' . v:servername . ' "' . self.tmp_file . '" ' . os
+  let debugger_parameters = ' ' . self.hostname . ' ' . self.rdebug_port . ' ' . self.debugger_port . ' ' . g:ruby_debugger_progname . ' ' . v:servername . ' "' . self.tmp_file . '" ' . os
 
   " Start in background
   if has("win32") || has("win64")
     silent exe '! start ' . rdebug
-    sleep 2
     let debugger = 'ruby "' . expand(self.runtime_dir . "/bin/ruby_debugger.rb") . '"' . debugger_parameters
     silent exe '! start ' . debugger
-    sleep 2
   else
-    call system(rdebug . ' &')
-    sleep 1
+    call system(rdebug . ' > ' . self.output_file . ' 2>&1 &')
     let debugger = 'ruby ' . expand(self.runtime_dir . "/bin/ruby_debugger.rb") . debugger_parameters
     call system(debugger. ' &')
   endif
 
   " Set PIDs of processes
-  let self.rdebug_pid = self._get_pid('localhost', self.rdebug_port)
-  let self.debugger_pid = self._get_pid('localhost', self.debugger_port)
+  let self.rdebug_pid = self._get_pid(self.rdebug_port, 1)
+  let self.debugger_pid = self._get_pid(self.debugger_port, 1)
 
   call g:RubyDebugger.logger.put("Start debugger")
 endfunction  
@@ -1366,21 +1436,36 @@ endfunction
 
 " Return 1 if processes with set PID exist.
 function! s:Server.is_running() dict
-  return (self._get_pid('localhost', self.rdebug_port) =~ '^\d\+$') && (self._get_pid('localhost', self.debugger_port) =~ '^\d\+$')
+  return (self._get_pid(self.rdebug_port, 0) =~ '^\d\+$') && (self._get_pid(self.debugger_port, 0) =~ '^\d\+$')
 endfunction
 
 
 " ** Private methods
 
 
-" Get PID of process, that listens given port on given host
-function! s:Server._get_pid(bind, port)
+" Get PID of process, that listens given port on given host. If must_get_pid
+" parameter is true, it will try to get PID for 20 seconds.
+function! s:Server._get_pid(port, must_get_pid)
+  let attempt = 0
+  let pid = self._get_pid_attempt(a:port)
+  while a:must_get_pid && pid == "" && attempt < 2000
+    sleep 10m
+    let attempt += 1
+    let pid = self._get_pid_attempt(a:port)
+  endwhile
+  return pid
+endfunction
+
+
+" Just try to get PID of process and return empty string if it was
+" unsuccessful
+function! s:Server._get_pid_attempt(port)
   if has("win32") || has("win64")
     let netstat = system("netstat -anop tcp")
     let pid_match = matchlist(netstat, ':' . a:port . '\s.\{-}LISTENING\s\+\(\d\+\)')
     let pid = len(pid_match) > 0 ? pid_match[1] : ""
   elseif executable('lsof')
-    let pid = system("lsof -i 4tcp@" . a:bind . ':' . a:port . " | grep LISTEN | awk '{print $2}'")
+    let pid = system("lsof -i tcp:" . a:port . " | grep LISTEN | awk '{print $2}'")
     let pid = substitute(pid, '\n', '', '')
   else
     let pid = ""
@@ -1390,8 +1475,8 @@ endfunction
 
 
 " Kill listener of given host/port
-function! s:Server._stop_server(bind, port) dict
-  let pid = self._get_pid(a:bind, a:port)
+function! s:Server._stop_server(port) dict
+  let pid = self._get_pid(a:port, 0)
   if pid =~ '^\d\+$'
     call self._kill_process(pid)
   endif
@@ -1418,6 +1503,19 @@ endfunction
 
 " *** Creating instances (start)
 
+" Initialize RUbyDebugger settings
+if !exists("g:ruby_debugger_fast_sender")
+  let g:ruby_debugger_fast_sender = 0
+endif
+if !exists("g:ruby_debugger_spec_path")
+  let g:ruby_debugger_spec_path = '/usr/bin/spec'
+endif
+if !exists("g:ruby_debugger_cucumber_path")
+  let g:ruby_debugger_cucumber_path = '/usr/bin/cucumber'
+endif
+if !exists("g:ruby_debugger_progname")
+  let g:ruby_debugger_progname = v:progname
+endif
 
 " Creating windows
 let s:variables_window = s:WindowVariables.new("variables", "Variables_Window")

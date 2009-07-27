@@ -23,7 +23,7 @@ set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 set backspace=indent,eol,start
 
 " Default browser
-command -bar -nargs=1 OpenURL :!firefox <args> & 2> /dev/null
+command -bar -nargs=1 OpenURL :!firefox <args> 2>&1 >/dev/null &
 
 
 " Set minium window size
@@ -45,8 +45,9 @@ nmap td :tabclose<CR>
 
 
 " Paste from X clipboard to vim
+" Commented to use Visual blocks
 vnoremap <C-C> "+y
-noremap <C-V> <ESC>"+gP
+"noremap <C-V> <ESC>"+gP
 inoremap <C-V> <ESC>"+gPi
 
 
@@ -158,6 +159,11 @@ endfunction
 :command -nargs=+ Rgrep call RailsGrep('<q-args>',"app/ lib/ config/initializers vendor/plugins")
 " Find  definition in the project(models,controllers,helpers and lib)
 :command -nargs=1 Rgrepdef call RailsGrep("'def .*" . <q-args> . "'","app/models app/controllers app/helpers lib/ config/initializers vendor/plugins")
+
+
+" Ruby Debugger
+" see :help ruby-debugger to understand it. Only for POSIX systems
+let g:ruby_debugger_fast_sender = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Add the contents of this file to your ~/.vimrc file
