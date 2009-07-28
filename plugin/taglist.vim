@@ -3131,7 +3131,7 @@ function! s:Tlist_Window_Open_File(win_ctrl, filename, tagpat)
     let prev_Tlist_Skip_Refresh = s:Tlist_Skip_Refresh
     let s:Tlist_Skip_Refresh = 1
 
-    exec "cd " . fnamemodify(a:filename, ':p:h')
+    "exec "cd " . fnamemodify(a:filename, ':p:h')
 
     if s:tlist_app_name == "winmanager"
         " Let the winmanager edit the file
