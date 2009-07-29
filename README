@@ -107,5 +107,5 @@ Toggle:
 	F5					ignore case
 
 Grep(with ACK)
-	:Rgre	<string>					Search the string along the project and show results in quickfix window
+	:Rgrep	<string>					Search the string along the project and show results in quickfix window
 	:Rgrepdef	<string>			Search a method with the string along the project and show results in quickfix window
