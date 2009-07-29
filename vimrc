@@ -10,8 +10,10 @@ set shiftwidth=2
 set softtabstop=2
 " Set terminal to 256 colors
 set t_Co=256
+"
 " Textmate scheme colors clone
-colorscheme vividchalk
+"colorscheme vividchalk
+colorscheme vibrantink
 "set visualbell
 
 "set nobackup
@@ -121,7 +123,6 @@ command -nargs=+ MapToggle call MapToggle(<f-args>)
 MapToggle <F2> paste 
 MapToggle <F3> hlsearch 
 MapToggle <F4> wrap 
-MapToggle <F5> ignorecase 
 
 " The following will make tabs and trailing spaces visible when requested(F10) 
 " set listchars=tab:>-,trail:·,eol:$
@@ -164,6 +165,39 @@ endfunction
 " Ruby Debugger
 " see :help ruby-debugger to understand it. Only for POSIX systems
 let g:ruby_debugger_fast_sender = 1
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Recommendations from http://items.sjbach.com/319/configuring-vim-right
+ 
+" Jump to mark line and column
+nnoremap ' `
+" Jump to mark line
+nnoremap ` '
+
+" Remap leader (finally I will try it)
+let mapleader = ","
+
+" Keep a longer history
+set history=100
+
+" Use case-smart searching
+set ignorecase 
+set smartcase
+
+" Set terminal title
+set title
+
+" Maintain more context around the cursor
+set scrolloff=3
+
+" Make file/command completion useful
+" Show a wildmenu when try to find a command or file
+set wildmenu
+set wildmode=longest,full
+
+" Read on comments:
+set diffopt+=iwhite             " ignore whitespace in diff mode
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Add the contents of this file to your ~/.vimrc file
