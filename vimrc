@@ -8,6 +8,7 @@ set number
 set tabstop=2
 set shiftwidth=2
 set softtabstop=2
+set autoread
 " Set terminal to 256 colors
 set t_Co=256
 "
@@ -15,6 +16,9 @@ set t_Co=256
 "colorscheme vividchalk
 colorscheme vibrantink
 "set visualbell
+
+" Remap leader (finally I will try it)
+let mapleader = ","
 
 "set nobackup
 " Store temporary files in a central spot
@@ -70,17 +74,25 @@ autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+autocmd FileType ruby,eruby let g:ruby_minlines = 500
 " Load matchit (% to bounce from do to end, etc.)
 runtime! plugin/matchit.vim
-
+runtime! macros/matchit.vim
 
 "  move text and rehighlight -- vim tip_id=224
 "vnoremap > ><CR>gv
 "vnoremap < <<CR>gv
+" Enable TAB indent and SHIFT-TAB unindent
+vnoremap <silent> <TAB> >gv
+vnoremap <silent> <S-TAB> <gv
+
 
 " A really status line
 "set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
-set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
+if &statusline == ''
+	"set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
+	set statusline=[%n]\ %<%.99f\ %h%w%m%r%y%=%-16(\ %l,%c-%v\ %)%P
+end
 set laststatus=2
 
 
@@ -133,6 +145,29 @@ MapToggle <F4> wrap
 " Load NERD_tree
 map <F9> :NERDTreeToggle<CR>
 
+" NERDCommenter
+let g:NERDCreateDefaultMappings = 0
+let g:NERDSpaceDelims = 1
+nmap \\ <Plug>NERDCommenterInvert
+xmap \\ <Plug>NERDCommenterInvert
+ 
+
+"VCScommand
+" Remove detault mappings
+let VCSCommandDisableMappings=1
+" Show log related to the current file
+nmap <leader>cl :VCSLog<CR>
+" Show diffs with version in the CVS
+nmap <leader>cd :VCSVimDiff<CR>
+" Check-in the current version
+nmap <leader>ci :VCSCommit <CR>
+" Update current file
+nmap <leader>cu :VCSUpdate <CR>
+" Shows the status of the file
+nmap <leader>cs :VCSStatus<CR>
+
+
+
 
 " Fuzzy Finder modified by Jamis Buck
 let g:fuzzy_ignore = "*.log,*.jpg,*.png,*.gif,*.swp"
@@ -161,6 +196,17 @@ endfunction
 " Find  definition in the project(models,controllers,helpers and lib)
 :command -nargs=1 Rgrepdef call RailsGrep("'def .*" . <q-args> . "'","app/models app/controllers app/helpers lib/ config/initializers vendor/plugins")
 
+" If at end of a line of spaces, delete back to the previous line.
+" Otherwise, <Left>
+inoremap <silent> <C-B> <C-R>=getline('.')=~'^\s*$'&&col('.')>strlen(getline('.'))?"0\<Lt>C-D>\<Lt>Esc>kJs":"\<Lt>Left>"<CR>
+cnoremap <C-B> <Left>
+" If at end of line, decrease indent, else <Del>
+inoremap <silent> <C-D> <C-R>=col('.')>strlen(getline('.'))?"\<Lt>C-D>":"\<Lt>Del>"<CR>
+cnoremap <C-D> <Del>
+" If at end of line, fix indent, else <Right>
+inoremap <silent> <C-F> <C-R>=col('.')>strlen(getline('.'))?"\<Lt>C-F>":"\<Lt>Right>"<CR>
+inoremap <C-E> <End>
+cnoremap <C-F> <Right>
 
 " Ruby Debugger
 " see :help ruby-debugger to understand it. Only for POSIX systems
@@ -174,9 +220,6 @@ nnoremap ' `
 " Jump to mark line
 nnoremap ` '
 
-" Remap leader (finally I will try it)
-let mapleader = ","
-
 " Keep a longer history
 set history=100
 
@@ -189,6 +232,12 @@ set title
 
 " Maintain more context around the cursor
 set scrolloff=3
+set sidescrolloff=5
+
+" When a bracket is insert, briefly jump to the matching one.
+set showmatch
+" Show command in the last line of the screen
+set showcmd
 
 " Make file/command completion useful
 " Show a wildmenu when try to find a command or file

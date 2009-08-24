@@ -3,6 +3,12 @@ Installation (based on http://github.com/goomerko/vim-rails.config/tree/master)
 Dependencies: 
 	vim with ruby support 
 	ACK (or comment line 147 in vimrc file - not tested).
+  cURL
+  Exuberant ctags
+
+  Required gems:
+    - jamis-fuzzy_file_finder (gem sources -a http://gems.github.com if needed)
+    - ruby-debug-ide
  
 1. Backup your .vimrc file and .vim directory
  
@@ -15,6 +21,12 @@ Dependencies:
 3. Set projects base directory at line 170 in vimrc file.
 
 4. Enjoy!
+
+
+Note for Windows users:
+	.vimrc must be renamed to $HOME/_vimrc
+	.vim must be renamed to $HOME/vimfiles
+  In .vimrc file change paths at lines 21 and 22. For example: C:\windows\temp
 
 
 Plugins
