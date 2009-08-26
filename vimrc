@@ -321,18 +321,22 @@ endfunc
 " separated by '|''s
 
 func TlGetDirs(start_dir)
-	let s:olddir = getcwd()
-	exec "cd " . g:base_dir . '/' . a:start_dir
-	let dirlist = a:start_dir . '|'
-	let dirlines = glob ('*')
-	let dirlines = substitute (dirlines, "\n", '/', "g")
-	while strlen(dirlines) > 0
-		let curdir = substitute (dirlines, '/.*', "", "")
-		let dirlines = substitute (dirlines, '[^/]*/\?', "", "")
-		if isdirectory(g:base_dir . '/' . a:start_dir . '/' . curdir)
-			let dirlist = dirlist . TlGetDirs(a:start_dir . '/' . curdir)
-		endif
-	endwhile
-	exec "cd " . s:olddir
-	return dirlist
-endfunc
+	try
+		let s:olddir = getcwd()
+		exec "cd " . g:base_dir . '/' . a:start_dir
+		let dirlist = a:start_dir . '|'
+		let dirlines = glob ('*')
+		let dirlines = substitute (dirlines, "\n", '/', "g")
+		while strlen(dirlines) > 0
+			let curdir = substitute (dirlines, '/.*', "", "")
+			let dirlines = substitute (dirlines, '[^/]*/\?', "", "")
+			if isdirectory(g:base_dir . '/' . a:start_dir . '/' . curdir)
+				let dirlist = dirlist . TlGetDirs(a:start_dir . '/' . curdir)
+			endif
+		endwhile
+		exec "cd " . s:olddir
+		return dirlist
+	catch 344
+		return ''
+	endtry
+	endfunc
