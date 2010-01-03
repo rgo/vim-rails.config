@@ -209,6 +209,8 @@ let g:gist_browser_command = 'firefox %URL% &'
 " Snipmate with AutoComplPop(acp)                "
 """"""""""""""""""""""""""""""""""""""""""""""""""
 let g:acp_behaviorSnipmateLength = 1
+let g:acp_ignorecaseOption = 0
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 " VCScommand                                     "
@@ -217,16 +219,6 @@ let g:acp_behaviorSnipmateLength = 1
 """"""""""""""""""""""""""""""""""""""""""""""""""
 " Remove detault mappings
 let VCSCommandDisableMappings=1
-" Show log related to the current file
-nmap <leader>cl :VCSLog<CR>
-" Show diffs with version in the CVS
-nmap <leader>cd :VCSVimDiff<CR>
-" Check-in the current version
-nmap <leader>ci :VCSCommit <CR>
-" Update current file
-nmap <leader>cu :VCSUpdate <CR>
-" Shows the status of the file
-nmap <leader>cs :VCSStatus<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 " Vimwiki                                        "
