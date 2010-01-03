@@ -119,6 +119,8 @@ AutoComplPop (aka acp):
 
 		:AcpEnable
 
+ruby_debugger:
+	See usage in the help (:help ruby-debugger).
 
 Mappings and functions
 ======================
