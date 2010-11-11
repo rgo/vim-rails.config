@@ -1,0 +1,64 @@
+= Vim-rails.config
+A Vim configuration to develop with Ruby and RoR.
+
+== Dependencies
+ * Vim with Ruby support
+ * Ack (ack-grep in ubuntu and debian based systems)
+ * cURL
+ * Exuberant ctags
+
+== Installation
+ 1. After you downloaded the repository copy all the files in your home.
+ 2. Execute the +vimbundles.sh+ script, it will create a .vimbundles directory and download every plugin inside.
+ 3. Then go to +.vimbundles/Command-T/ruby/command-t+ and execute the command +ruby extconf.rb+
+ 4. Finally check +vimrc.local+ to change customize and adapt this file to your environment.
+
+Note for Windows users:
+ * .vimrc must be renamed to $HOME\_vimrc
+ * .vim must be renamed to $HOME\vimfiles
+
+== Plugins
+=== Hashrocket default
+ * vim-slurper
+ * vim-bufonly
+ * tabular
+ * vim-json
+ * ack.vim
+ * vim-javascript
+ * nerdcommenter
+ * vim-pyte
+ * vim-abolish
+ * vim-cucumber
+ * vim-endwise
+ * vim-flatfoot
+ * vim-fugitive
+ * vim-git
+ * vim-haml
+ * vim-markdown
+ * vim-pathogen
+ * vim-rake
+ * vim-ragtag
+ * vim-rails
+ * vim-ruby
+ * vim-repeat
+ * vim-speeddating
+ * vim-surround
+ * vim-unimpaired
+ * vim-vividchalk
+ * vim-irblack
+
+=== My choice
+ * Command-T
+ * gist-vim
+ * nerdtree
+ * taglist.vim
+ * vim-css-color
+ * vim-rdoc
+ * vcscommand.vim
+ * vimwiki
+
+=== Usages and Tips
+*TODO*
+
+== Acknowledgements
+This setup is a customized version of hashrocket setup (thanks!)
