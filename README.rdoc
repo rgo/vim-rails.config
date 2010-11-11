@@ -57,7 +57,7 @@ Note for Windows users:
  * vcscommand.vim
  * vimwiki
 
-=== Usages and Tips
+== Usages and Tips
 *TODO*
 
 == Acknowledgements
