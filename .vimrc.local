@@ -1,0 +1,263 @@
+set nocompatible
+syntax on
+filetype plugin indent on
+set encoding=utf-8
+set mouse=a
+set ruler
+set number
+set tabstop=2
+set shiftwidth=2
+set expandtab
+set softtabstop=2
+set autoread
+set incsearch
+" Normal behaviour of backspace key
+set backspace=indent,eol,start
+
+" Set terminal to 256 colors
+" set t_Co=256
+" Textmate scheme colors clone
+" colorscheme vividchalk
+" colorscheme vibrantink
+" colorscheme herald
+
+" don't keep backup after close
+set nobackup
+" do keep a backup while working
+set writebackup
+" Store temporary files in a central spot
+set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+
+
+" Set tag files
+set tags=tags,./tags,tmp/tags,./tmp/tags
+
+" Additional Ruby Syntax Highlighting
+au BufRead,BufNewFile {Capfile,Gemfile,Rakefile,Thorfile,config.ru,.caprc,.irbrc,irb_tempfile*} set ft=ruby
+" RDOC Syntax Highlighting
+autocmd BufRead,BufNewFile *.rd,*.rdoc     set filetype=rdoc
+
+" Load our vim plugins
+if exists('g:loaded_pathogen')
+  call pathogen#runtime_prepend_subdirectories(expand('~/.vimbundles.local'))
+endif
+
+" Uses jquery syntax file to javascript
+" au BufRead,BufNewFile jquery.*.js set ft=javascript syntax=jquery
+
+" Default browser - Ubuntu
+" command -bar -nargs=1 OpenURL :!x-www-browser <args> 2>&1 >/dev/null &
+" Default browser - Mac OS X
+command -bar -nargs=1 OpenURL :!open <args> 2>&1 >/dev/null &
+
+
+" Set minium window size
+set wmh=0
+
+" Mapeamos las teclas + y - para que nos maximice o minimice la ventana actual
+if bufwinnr(1)
+  map + <C-W>_
+  map - <C-W>=
+endif
+
+
+" Move between tabs
+" Note: tabnext = gt AND tabprevious = gT
+" nnoremap <c-n> <esc>:tabnext<CR>
+" nnoremap <c-p> <esc>:tabprevious<CR>
+" nnoremap <silent> <C-t> :tabnew<CR>
+" tip 199 (comments) - Open actual buffer in a tab and then close
+nmap t% <C-W>T
+nmap td :tabclose<CR>
+nmap tn :tabnew<CR>
+
+
+" Paste from X clipboard to vim
+" Commented to use Visual blocks
+vnoremap <C-C> "+y
+"noremap <C-V> <ESC>"+gP
+inoremap <C-V> <ESC>"+gPi
+
+
+"  move text and rehighlight -- vim tip_id=224
+"vnoremap > ><CR>gv
+"vnoremap < <<CR>gv
+" Enable TAB indent and SHIFT-TAB unindent
+vnoremap <silent> <TAB> >gv
+vnoremap <silent> <S-TAB> <gv
+
+
+" A really status line
+"set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
+if &statusline == ''
+  set statusline=%F%m%r%h%w\ [TYPE=%Y]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
+end
+set laststatus=2
+
+
+" Toggle paste mode
+nmap <silent> <F2> :set invpaste<CR>:set paste?<CR>
+" Toggle Highlight search - deprecated now I use :nohl
+"nmap <silent> <F3> :set invhls<CR>:set hls?<CR>
+" Toggle List
+set listchars=tab:>-,trail:·,eol:$
+nmap <silent> <F3> :set invlist<CR>:set list?<CR>
+" set text wrapping toggles
+nmap <silent> <F4> :set invwrap<CR>:set wrap?<CR>
+
+
+" ACK integration
+" set grepprg=ack-grep
+" set grepformat=%f:%l:%m
+let g:ackprg="ack-grep -H --nocolor --nogroup --column"
+
+" Find searched_string in directories(...)
+function RailsGrep(searched_string,...)
+  let s:dir_list = ''
+  for dir in a:000
+    let s:dir_list = s:dir_list . dir
+  endfor
+  execute "silent! grep --ruby " . a:searched_string . " " . s:dir_list
+  botright cw
+  redraw!
+endfunction
+" Find searched_string in all project(app and lib directories)
+:command -nargs=+ Rgrep call RailsGrep('<q-args>',"app/ lib/ config/initializers vendor/plugins")
+" Find  definition in the project(models,controllers,helpers and lib)
+:command -nargs=1 Rgrepdef call RailsGrep("'def .*" . <q-args> . "'","app/models app/controllers app/helpers lib/ config/initializers vendor/plugins")
+
+" Ruby omnicompletion [help ft-ruby-omni]
+" defined in .vim/plugins/hashrocket.vim already
+" let g:rubycomplete_buffer_loading = 1
+" let g:rubycomplete_rails = 1
+" I should see how to hide Rails warnings
+" let g:rubycomplete_classes_in_global = 1
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Recommendations from http://items.sjbach.com/319/configuring-vim-right "
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Jump to mark line and column
+nnoremap ' `
+" Jump to mark line
+nnoremap ` '
+
+" Keep a longer history
+set history=100
+
+" Use case-smart searching
+set ignorecase
+set smartcase
+
+" Set terminal title
+set title
+
+" Maintain more context around the cursor
+set scrolloff=3
+set sidescrolloff=5
+
+" When a bracket is insert, briefly jump to the matching one.
+set showmatch
+" Show command in the last line of the screen
+set showcmd
+
+" Make file/command completion useful
+" Show a wildmenu when try to find a command or file
+" set wildmenu
+set wildmode=longest:full,full
+
+" Read on comments:
+" set diffopt+=iwhite             " ignore whitespace in diff mode
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" NERDtree                                                      "
+" Don't need presentation                                       "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+map <F8> :NERDTreeToggle<CR>
+let NERDTreeWinPos='right'
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Taglist                                                       "
+" I cann't live without Taglist :)                              "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+map <F7> :TlistToggle<CR>
+" Split to the right side of the screen
+let g:Tlist_Use_Left_Window = 1
+" Set the window width
+let g:Tlist_WinWidth = 24
+" Sort by the order
+let g:Tlist_Sort_Type = "name"
+" Do not display the help info
+let g:Tlist_Compact_Format = 1
+" If you are the last, kill yourself
+let g:Tlist_Exit_OnlyWindow = 1
+" Do not close tags for other files
+let g:Tlist_File_Fold_Auto_Close = 1
+" Do not show folding tree
+let g:Tlist_Enable_Fold_Column = 0
+" Always display one file tags
+let g:Tlist_Show_One_File = 1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""
+" Command-T                                     "
+" Provides convenient ways to quickly reach the "
+" buffer/file/command/bookmark/tag you want.    "
+"""""""""""""""""""""""""""""""""""""""""""""""""
+set wildignore+=*.log,*.jpg,*.png,*.gif,*.swp,vendor/rails/**
+let g:CommandTMatchWindowAtTop=1
+nmap <silent> <Leader>ft :CommandT<CR>
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+" Matchit                                         "
+" Load matchit (% to bounce from do to end, etc.) "
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+runtime! plugin/matchit.vim
+runtime! macros/matchit.vim
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" allml                                          "
+" Provide maps for editing tags                  "
+""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:allml_global_maps = 1
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" gist                                           "
+""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:gist_open_browser_after_post = 1
+let g:gist_detect_filetype = 1
+let g:gist_browser_command = 'x-www-browser %URL%'
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" Snipmate with AutoComplPop(acp)                "
+""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:acp_behaviorSnipmateLength = 1
+let g:acp_ignorecaseOption = 0
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" Vimwiki                                        "
+""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:vimwiki_list = [{'path': '~/Documentos/vimwiki/',
+      \ 'path_html': '~/Documentos/vimwiki_html/'}]
+let g:vimwiki_camel_case = 0
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" Ruby Debugger                                  "
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" let g:ruby_debugger_fast_sender = 1
+let g:ruby_debugger_spec_path = '/usr/local/bin/spec'         " set Rspec path
+let g:ruby_debugger_cucumber_path = '/usr/local/bin/cucumber' " set Cucumber path
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" VCScommand                                     "
+" VIM 7 plugin useful for manipulating files     "
+" controlled by CVS, SVN, SVK, git, bzr, and hg. "
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" Remove detault mappings
+let VCSCommandDisableMappings=1
